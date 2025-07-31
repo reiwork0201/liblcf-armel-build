@@ -16,10 +16,11 @@ jobs:
         run: |
           git clone --depth=1 https://github.com/EasyRPG/liblcf.git
 
-      - name: Set up dockcross for armel
-        run: |
-          docker run --rm dockcross/linux-armel > ./dockcross-armel
-          chmod +x ./dockcross-armel
+     - name: Set up dockcross script (armv5 / soft-float)
+  run: |
+    docker run --rm dockcross/linux-armv5 > ./dockcross-armel
+    chmod +x ./dockcross-armel
+
 
       - name: Build liblcf with dockcross
         run: |
