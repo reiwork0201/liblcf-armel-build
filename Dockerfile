@@ -6,10 +6,10 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     git
 
-WORKDIR /app
+WORKDIR /app/liblcf
 
-COPY ./liblcf /app/liblcf
+RUN git clone --depth=1 https://github.com/EasyRPG/liblcf.git .
 
 RUN mkdir -p build && cd build && \
-    cmake ../liblcf -DCMAKE_BUILD_TYPE=Release && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release && \
     make -j$(nproc)
