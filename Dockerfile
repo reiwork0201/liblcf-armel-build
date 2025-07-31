@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM arm32v5/ubuntu:20.04
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -8,7 +8,6 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# liblcf のソースコードをコピー（actions/checkout で取得済みのはず）
 COPY ./liblcf /app/liblcf
 
 RUN mkdir -p build && cd build && \
