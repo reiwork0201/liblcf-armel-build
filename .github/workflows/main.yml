@@ -18,11 +18,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and compile liblcf for armel
+      - name: Build liblcf Docker image
         run: |
-          docker buildx build --platform linux/arm/v5 --load -t liblcf-armel-build . --progress=plain
+          docker buildx build --platform linux/arm/v5 --load -t liblcf-armel-build .
 
-      - name: Upload artifacts
+      - name: Create container from built image
+        run: |
+          docker create --name liblcf-build-container liblcf-armel-build
+
+      - name: Copy build artifacts
+        run: |
+          docker cp liblcf-build-container:/app/liblcf/build ./build
+
+      - name: Remove container
+        run: |
+          docker rm liblcf-build-container
+
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: liblcf-armel-build
