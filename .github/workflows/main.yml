@@ -1,4 +1,4 @@
-name: Build liblcf for armel
+name: Build liblcf for armel with xcross
 
 on:
   push:
@@ -9,23 +9,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout this repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Clone liblcf source
-        run: |
-          git clone --depth=1 https://github.com/EasyRPG/liblcf.git
+        run: git clone --depth=1 https://github.com/EasyRPG/liblcf.git
 
-      - name: Set up dockcross script (armv5 / soft-float)
+      - name: Build liblcf with xcross (armel)
         run: |
-          docker run --rm ghcr.io/dockcross/linux-armv5 > ./dockcross-armel
-          chmod +x ./dockcross-armel
-
-      - name: Build liblcf with dockcross
-        run: |
-          ./dockcross-armel bash -c "
-            apt-get update && apt-get install -y cmake pkg-config
-            cd liblcf
+          docker run --rm -v ${{ github.workspace }}:/workspace xcross/armel \
+          /bin/bash -c "
+            apt-get update && apt-get install -y cmake pkg-config build-essential
+            cd /workspace/liblcf
             mkdir -p build && cd build
             cmake .. -DCMAKE_BUILD_TYPE=Release
             make -j$(nproc)
@@ -36,3 +31,4 @@ jobs:
         with:
           name: liblcf-armel-build
           path: liblcf/build/
+
