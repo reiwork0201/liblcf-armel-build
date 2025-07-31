@@ -1,4 +1,4 @@
-name: Build liblcf for armel with xcross
+name: Build liblcf for armel
 
 on:
   push:
@@ -9,26 +9,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Clone liblcf source
-        run: git clone --depth=1 https://github.com/EasyRPG/liblcf.git
+      - name: Set up QEMU (for emulation)
+        uses: docker/setup-qemu-action@v2
 
-      - name: Build liblcf with xcross (armel)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and compile liblcf for armel
         run: |
-          docker run --rm -v ${{ github.workspace }}:/workspace xcross/armel \
-          /bin/bash -c "
-            apt-get update && apt-get install -y cmake pkg-config build-essential
-            cd /workspace/liblcf
-            mkdir -p build && cd build
-            cmake .. -DCMAKE_BUILD_TYPE=Release
-            make -j$(nproc)
-          "
+          docker buildx build --platform linux/arm/v5 --load -t liblcf-armel-build . --progress=plain
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: liblcf-armel-build
-          path: liblcf/build/
-
+          path: build/
